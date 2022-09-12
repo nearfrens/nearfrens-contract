@@ -91,8 +91,9 @@ contract NearFrens {
         active[msg.sender] = true;
     }
 
-        /// @dev This function locates the data of the user in the array: collectionToZoneToPosition
+    /// @dev This function locates the data of the user in the array: collectionToZoneToPosition
     ///       once located this data is removed by switching item index with last position and deleting last position.
+    /// ToDo Optimize with for loop and use arrays for positionsIndex1,2,3...  
     function checkOut() external {
         require(active[msg.sender], "No active user");
         address[] memory listCollectionsUser = addressToLastCheckInData[msg.sender]._collections;
@@ -111,7 +112,7 @@ contract NearFrens {
             collectionToZoneToPosition[listCollectionsUser[1]][zone] = removeIndexElement(positionsCollect2, positionIndex2);
         }
         if(listCollectionsUser.length > 2) {
-            positionsCollect3 = collectionToZoneToPosition[listCollectionsUser[1]][zone];
+            positionsCollect3 = collectionToZoneToPosition[listCollectionsUser[2]][zone];
             positionIndex3 = getPositionInArray(positionsCollect2, msg.sender);
             collectionToZoneToPosition[listCollectionsUser[2]][zone] = removeIndexElement(positionsCollect3, positionIndex3);
         }
