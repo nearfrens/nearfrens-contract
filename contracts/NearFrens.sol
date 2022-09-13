@@ -13,10 +13,10 @@ contract NearFrens {
     
     ///here we add the user in order to be able to track it's position in arrays to remove it.
     struct Position {
-        int32 _latitude;
-        int32 _longitude;
-        uint256 _timestamp;
-        address _user;
+        int32 latitude;
+        int32 longitude;
+        uint256 timestamp;
+        address user;
     }
 
     struct LastCheckInData {
@@ -53,30 +53,34 @@ contract NearFrens {
 
     /// To Do: Put a check that requires the sender to be in possession of the NFT
     function checkIn(
-        int32 latitude,
-        int32 longitude,
-        uint256 zoneID,
-        address[] memory collections, 
-        uint256[] memory tokenIDs) external {
+        int32 _latitude,
+        int32 _longitude,
+        uint256 _zoneID,
+        address[] memory _collections, 
+        uint256[] memory _tokenIDs) external {
 
-        require(collections.length < 4, "Check in max for 3 collections");
+        require(_collections.length < 4, "Check in max for 3 collections");
         require(!active[msg.sender]);
-        for(uint j = 0; j < tokenIDs.length; j++) {
-            require(IERC721(collections[j]).ownerOf(tokenIDs[j]) == msg.sender);
+        for(uint j = 0; j < _tokenIDs.length; j++) {
+            require(IERC721(_collections[j]).ownerOf(_tokenIDs[j]) == msg.sender);
         }
         
-        Position memory positionData = Position(latitude, longitude, block.timestamp, msg.sender);
-        addressToPosition[msg.sender].push(positionData);
+        
+        Position storage p = addressToPosition[msg.sender].push();
+        p.latitude = _latitude;
+        p.longitude = _longitude;
+        p.timestamp = block.timestamp;
+        p.user = msg.sender;
         
         
-        for(uint i = 0; i < collections.length; i++) {
-            require(collectionToZoneToPosition[collections[i]][zoneID].length < 10000, "too much users checked in for this collection in this zone");
-            collectionToZoneToPosition[collections[i]][zoneID].push(positionData);
+        for(uint i = 0; i < _collections.length; i++) {
+            require(collectionToZoneToPosition[_collections[i]][_zoneID].length < 10000, "too much users checked in for this collection in this zone");
+            collectionToZoneToPosition[_collections[i]][_zoneID].push(p);
 
         }
         
 
-        LastCheckInData memory checkInData = LastCheckInData(positionData, collections, zoneID);
+        LastCheckInData memory checkInData = LastCheckInData(p, _collections, _zoneID);
         addressToLastCheckInData[msg.sender] = checkInData;
         active[msg.sender] = true;
     }
@@ -84,53 +88,51 @@ contract NearFrens {
     /// @dev This function locates the data of the user in the array: collectionToZoneToPosition
     ///       once located this data is removed by switching item index with last position and deleting last position.
     /// ToDo Optimize with for loop and use arrays for positionsIndex1,2,3...  
-    function checkOut() external {
+     function checkOut() external {
         require(active[msg.sender], "No active user");
         address[] memory listCollectionsUser = addressToLastCheckInData[msg.sender]._collections;
         uint256 zone = addressToLastCheckInData[msg.sender]._zone;
 
-        Position[] memory positionsCollect1 = collectionToZoneToPosition[listCollectionsUser[0]][zone];
-        Position[] memory positionsCollect2;
-        Position[] memory positionsCollect3;
-        uint256 positionIndex1 = getPositionInArray(positionsCollect1, msg.sender);
-        uint256 positionIndex2;
-        uint256 positionIndex3;
+        for(uint8 i = 0; i < listCollectionsUser.length; i++) {
+            Position[] storage newArr = collectionToZoneToPosition[listCollectionsUser[i]][zone];
+            uint256 j = 0;
+            for(uint256 k = 0; k < 10000 ; k++ ) {
+                if(newArr[k].user == msg.sender) {
+                    break;
+                }
+                j++;
 
-        if(listCollectionsUser.length > 1) {
-            positionsCollect2 = collectionToZoneToPosition[listCollectionsUser[1]][zone];
-            positionIndex2 = getPositionInArray(positionsCollect2, msg.sender);
-            collectionToZoneToPosition[listCollectionsUser[1]][zone] = removeIndexElement(positionsCollect2, positionIndex2);
-        }
-        if(listCollectionsUser.length > 2) {
-            positionsCollect3 = collectionToZoneToPosition[listCollectionsUser[2]][zone];
-            positionIndex3 = getPositionInArray(positionsCollect2, msg.sender);
-            collectionToZoneToPosition[listCollectionsUser[2]][zone] = removeIndexElement(positionsCollect3, positionIndex3);
+            } 
+            newArr[j] = newArr[newArr.length - 1];
+            delete newArr[newArr.length - 1];
+            collectionToZoneToPosition[listCollectionsUser[i]][zone] = newArr;
+
+
+            //collectionToZoneToPosition[listCollectionsUser[i]][zone] = removeIndexElement(collectionToZoneToPosition[listCollectionsUser[i]][zone], positionIndex);
+
         }
 
-        collectionToZoneToPosition[listCollectionsUser[0]][zone] = removeIndexElement(positionsCollect1, positionIndex1);
+        //Position[] memory positionsCollect1 = collectionToZoneToPosition[listCollectionsUser[0]][zone];
+        //Position[] memory positionsCollect2;
+        //Position[] memory positionsCollect3;
+        //uint256 positionIndex1 = getPositionInArray(positionsCollect1, msg.sender);
+        //uint256 positionIndex2;
+        //uint256 positionIndex3;
+
+        //if(listCollectionsUser.length > 1) {
+        //    positionsCollect2 = collectionToZoneToPosition[listCollectionsUser[1]][zone];
+        //    positionIndex2 = getPositionInArray(positionsCollect2, msg.sender);
+        //    collectionToZoneToPosition[listCollectionsUser[1]][zone] = removeIndexElement(positionsCollect2, positionIndex2);
+        //}
+        //if(listCollectionsUser.length > 2) {
+        //    positionsCollect3 = collectionToZoneToPosition[listCollectionsUser[2]][zone];
+        //    positionIndex3 = getPositionInArray(positionsCollect3, msg.sender);
+        //    collectionToZoneToPosition[listCollectionsUser[2]][zone] = removeIndexElement(positionsCollect3, positionIndex3);
+        //}
+
+        //collectionToZoneToPosition[listCollectionsUser[0]][zone] = removeIndexElement(positionsCollect1, positionIndex1);
 
         active[msg.sender] = false;
-    }
-
-    function getPositionInArray (Position[] memory positions, address user) private pure returns (uint256 positionIndex) {
-        uint256 j = 0;
-        for(uint256 i = 0; i < 10000 ; i++ ) {
-            if(positions[i]._user == user) {
-                break;
-            }
-            j++;
-
-        }
-        return j;
-    }
-
-    function removeIndexElement(Position[] memory positions, uint256 indexToRemove) private pure returns (Position[] memory updatedPositions) {
-
-        positions[indexToRemove] = positions[positions.length - 1];
-        delete positions[positions.length - 1];
-
-        return positions;
-
     }
 
 }
