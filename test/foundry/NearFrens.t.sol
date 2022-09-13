@@ -12,6 +12,24 @@ contract NearFrens_Test is Test {
     //Variable for contract instance
     NearFrens private nearfrens;
     uint256 mainnetFork;
+    address bob = address(0x1);
+    address alice = address(0x2);
+
+    address NFTaddress1 = address(0x3);
+    address NFTaddress2 = address(0x4);
+    address NFTaddress3 = address(0x5);
+
+    address[] NFT_contracts = [NFTaddress1, NFTaddress2, NFTaddress3];
+    uint256[] tokenIds = [3, 28, 49];
+
+    struct Positions {
+        int32 latitude;
+        int32 longitude;
+        uint256 timestamp;
+        address user;
+    }
+
+
 
     function setUp() public {
         //Instantiate new contract instance
@@ -21,10 +39,16 @@ contract NearFrens_Test is Test {
         vm.selectFork(mainnetFork);
     }
 
-    function testExample() public {
-
-        vm.roll(100);
-        assertTrue(true);
+    function testCheckIn() public {
+        vm.startPrank(bob);
+        nearfrens.checkIn(387775416, -913519609, 1, NFT_contracts , tokenIds);
+        (int32 lat, int32 long, uint256 timestamp, address user) = nearfrens.returnPositionData();
+        
+        emit log_int(lat);
+        emit log_int(long);
+        emit log_uint(timestamp);
+        emit log_address(user);
+        
     }
 
 

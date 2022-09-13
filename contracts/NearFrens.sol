@@ -25,8 +25,8 @@ contract NearFrens {
         uint256 _zone;
     }
 
-    mapping(address => LastCheckInData) private addressToLastCheckInData;
-    mapping(address => Position[]) private addressToPosition;
+    mapping(address => LastCheckInData) public addressToLastCheckInData;
+    mapping(address => Position[]) public addressToPosition;
     mapping(address => bool) active;
     
     ///Will return an array of positions for a specified collection + zone
@@ -51,6 +51,13 @@ contract NearFrens {
 
     }
 
+    function returnPositionData() external view returns (int32, int32, uint256, address) {
+        uint256 index = addressToPosition[msg.sender].length;
+        Position memory lastPosition = addressToPosition[msg.sender][index - 1];
+        return(lastPosition.longitude, lastPosition.latitude, lastPosition.timestamp, lastPosition.user);
+
+    }
+
     /// To Do: Put a check that requires the sender to be in possession of the NFT
     function checkIn(
         int32 _latitude,
@@ -61,9 +68,9 @@ contract NearFrens {
 
         require(_collections.length < 4, "Check in max for 3 collections");
         require(!active[msg.sender]);
-        for(uint j = 0; j < _tokenIDs.length; j++) {
-            require(IERC721(_collections[j]).ownerOf(_tokenIDs[j]) == msg.sender);
-        }
+        //for(uint j = 0; j < _tokenIDs.length; j++) {
+        //    require(IERC721(_collections[j]).ownerOf(_tokenIDs[j]) == msg.sender);
+        //}
         
         
         Position storage p = addressToPosition[msg.sender].push();
