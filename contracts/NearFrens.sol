@@ -10,23 +10,11 @@ interface IERC721 {
 }
 
 contract NearFrens {
-
-    struct Latitude {
-        int8 _degrees;
-        int8 _minutes;
-        int8 _seconds;
-    }
-
-    struct Longitude {
-        int16 _degrees;
-        int8 _minutes;
-        int8 _seconds;
-    }
     
     ///here we add the user in order to be able to track it's position in arrays to remove it.
     struct Position {
-        Latitude _latitude;
-        Longitude _longitude;
+        int32 _latitude;
+        int32 _longitude;
         uint256 _timestamp;
         address _user;
     }
@@ -65,8 +53,8 @@ contract NearFrens {
 
     /// To Do: Put a check that requires the sender to be in possession of the NFT
     function checkIn(
-        Latitude memory latitude,
-        Longitude memory longitude,
+        int32 latitude,
+        int32 longitude,
         uint256 zoneID,
         address[] memory collections, 
         uint256[] memory tokenIDs) external {
@@ -80,11 +68,13 @@ contract NearFrens {
         Position memory positionData = Position(latitude, longitude, block.timestamp, msg.sender);
         addressToPosition[msg.sender].push(positionData);
         
+        
         for(uint i = 0; i < collections.length; i++) {
             require(collectionToZoneToPosition[collections[i]][zoneID].length < 10000, "too much users checked in for this collection in this zone");
             collectionToZoneToPosition[collections[i]][zoneID].push(positionData);
 
         }
+        
 
         LastCheckInData memory checkInData = LastCheckInData(positionData, collections, zoneID);
         addressToLastCheckInData[msg.sender] = checkInData;
