@@ -26,6 +26,7 @@ contract NearFrens {
         Position _position;
         address[] _collections;
         uint256 _zone;
+        string status;
     }
 
     mapping(address => LastCheckInData) public addressToLastCheckInData;
@@ -67,20 +68,26 @@ contract NearFrens {
         int32 _longitude,
         uint256 _zoneID,
         address[] memory _collections, 
-        uint256[] memory _tokenIDs) external {
+        uint256[] memory _tokenIDs,
+        string memory _status) external {
 
         require(_collections.length < 4, "Check in max for 3 collections");
-        require(!active[msg.sender]);
+        require(bytes(_status).length < 128, "too long description");
+    
         //for(uint j = 0; j < _tokenIDs.length; j++) {
         //    require(IERC721(_collections[j]).ownerOf(_tokenIDs[j]) == msg.sender);
         //}
         
+        if(active[msg.sender] == true) {
+            checkOut();
+        }
         
         Position storage p = addressToPosition[msg.sender].push();
         p.latitude = _latitude;
         p.longitude = _longitude;
         p.timestamp = block.timestamp;
         p.user = msg.sender;
+        p.status = _status;
         
         
         for(uint i = 0; i < _collections.length; i++) {
@@ -90,7 +97,7 @@ contract NearFrens {
         }
         
 
-        LastCheckInData memory checkInData = LastCheckInData(p, _collections, _zoneID);
+        LastCheckInData memory checkInData = LastCheckInData(p, _collections, _zoneID, _status);
         addressToLastCheckInData[msg.sender] = checkInData;
         active[msg.sender] = true;
     }
@@ -98,7 +105,7 @@ contract NearFrens {
     /// @dev This function locates the data of the user in the array: collectionToZoneToPosition
     ///       once located this data is removed by switching item index with last position and deleting last position.
     /// ToDo Optimize with for loop and use arrays for positionsIndex1,2,3...  
-     function checkOut() external {
+     function checkOut() internal {
         require(active[msg.sender], "No active user");
         address[] memory listCollectionsUser = addressToLastCheckInData[msg.sender]._collections;
         uint256 zone = addressToLastCheckInData[msg.sender]._zone;
@@ -117,32 +124,16 @@ contract NearFrens {
             newArr.pop();
             collectionToZoneToPosition[listCollectionsUser[i]][zone] = newArr;
 
-
-            //collectionToZoneToPosition[listCollectionsUser[i]][zone] = removeIndexElement(collectionToZoneToPosition[listCollectionsUser[i]][zone], positionIndex);
-
         }
 
-        //Position[] memory positionsCollect1 = collectionToZoneToPosition[listCollectionsUser[0]][zone];
-        //Position[] memory positionsCollect2;
-        //Position[] memory positionsCollect3;
-        //uint256 positionIndex1 = getPositionInArray(positionsCollect1, msg.sender);
-        //uint256 positionIndex2;
-        //uint256 positionIndex3;
+    }
 
-        //if(listCollectionsUser.length > 1) {
-        //    positionsCollect2 = collectionToZoneToPosition[listCollectionsUser[1]][zone];
-        //    positionIndex2 = getPositionInArray(positionsCollect2, msg.sender);
-        //    collectionToZoneToPosition[listCollectionsUser[1]][zone] = removeIndexElement(positionsCollect2, positionIndex2);
-        //}
-        //if(listCollectionsUser.length > 2) {
-        //    positionsCollect3 = collectionToZoneToPosition[listCollectionsUser[2]][zone];
-        //    positionIndex3 = getPositionInArray(positionsCollect3, msg.sender);
-        //    collectionToZoneToPosition[listCollectionsUser[2]][zone] = removeIndexElement(positionsCollect3, positionIndex3);
-        //}
-
-        //collectionToZoneToPosition[listCollectionsUser[0]][zone] = removeIndexElement(positionsCollect1, positionIndex1);
-
-        active[msg.sender] = false;
+    function getListOfUserPositions(address user) external view returns (Position[] memory positions) {
+        Position[] memory p;
+        for(uint256 i = 0; i < addressToPosition[user].length; i++) {
+            p[i] = addressToPosition[user][i];
+        }
+        return p;
     }
 
 }
