@@ -9,6 +9,8 @@ interface IERC721 {
     function ownerOf(uint256 tokenId) external view returns (address owner);
 }
 
+//TODO: add status + future check-in (fonction séparée) + add fct to get the addressToPosition mapping.
+
 contract NearFrens {
     
     ///here we add the user in order to be able to track it's position in arrays to remove it.
@@ -17,6 +19,7 @@ contract NearFrens {
         int32 longitude;
         uint256 timestamp;
         address user;
+        string status;
     }
 
     struct LastCheckInData {
@@ -111,7 +114,7 @@ contract NearFrens {
 
             } 
             newArr[j] = newArr[newArr.length - 1];
-            delete newArr[newArr.length - 1];
+            newArr.pop();
             collectionToZoneToPosition[listCollectionsUser[i]][zone] = newArr;
 
 
