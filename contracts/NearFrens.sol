@@ -9,9 +9,16 @@ interface IERC721 {
     function ownerOf(uint256 tokenId) external view returns (address owner);
 }
 
+// PUSH Comm Contract Interface
+interface IPUSHCommInterface {
+    function sendNotification(address _channel, address _recipient, bytes calldata _identity) external;
+}
+
 //TODO: add status + future check-in (fonction séparée) + add fct to get the addressToPosition mapping.
 
-contract NearFrens {
+contract NearFrens is Ownable {
+
+    address public EPNS_COMM_ADDRESS = 0xb3971BCef2D791bc4027BbfedFb47319A4AAaaAa;
     
     ///here we add the user in order to be able to track it's position in arrays to remove it.
     struct Position {
@@ -100,6 +107,31 @@ contract NearFrens {
         LastCheckInData memory checkInData = LastCheckInData(p, _collections, _zoneID, _status);
         addressToLastCheckInData[msg.sender] = checkInData;
         active[msg.sender] = true;
+
+    
+        IPUSHCommInterface(EPNS_COMM_ADDRESS).sendNotification(
+            0x5a29280d4668622ae19B8bd0bacE271F11Ac89dA, // from channel
+            address(this), // to recipient, put address(this) in case you want Broadcast or Subset.
+            bytes(
+                string(
+                    abi.encodePacked(
+                        "0", // this is notification identity.
+                        "+", // segregator
+                        "1", // this is payload type: (1, 3 or 4) = (Broadcast, targetted or subset)
+                        "+", // segregator
+                        "New Fren Around !", // this is notificaiton title
+                        "+", // segregator
+                        "Hey, check where ", // notification body
+                        addressToString(msg.sender), // notification body
+                        " is. His status says: ", // notification body
+                        _status, // notification body
+                        "." // notification body
+                    )
+                )
+            )
+        );
+        
+        return true;
     }
 
     /// @dev This function locates the data of the user in the array: collectionToZoneToPosition
@@ -131,5 +163,41 @@ contract NearFrens {
     function getListOfUserPositions(address user) public view returns (Position[] memory positions) {
         return addressToPosition[user];
     }
+
+
+    // Helper function to convert address to string
+    function addressToString(address _address) internal pure returns(string memory) {
+        bytes32 _bytes = bytes32(uint256(uint160(_address)));
+        bytes memory HEX = "0123456789abcdef";
+        bytes memory _string = new bytes(42);
+        _string[0] = '0';
+        _string[1] = 'x';
+        for(uint i = 0; i < 20; i++) {
+            _string[2+i*2] = HEX[uint8(_bytes[i + 12] >> 4)];
+            _string[3+i*2] = HEX[uint8(_bytes[i + 12] & 0x0f)];
+        }
+        return string(_string);
+    }
+
+    // Helper function to convert uint to string
+    function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
+        if (_i == 0) {
+            return "0";
+        }
+        uint j = _i;
+        uint len;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        bytes memory bstr = new bytes(len);
+        uint k = len - 1;
+        while (_i != 0) {
+            bstr[k--] = byte(uint8(48 + _i % 10));
+            _i /= 10;
+        }
+        return string(bstr);
+    }
+
 
 }
