@@ -12,6 +12,11 @@ module.exports = {
       url: process.env.ALCHEMY_GOERLI,
       accounts: [process.env.PRIVATE_KEY],
       gas: "auto",
+    },
+    mumbai: {
+      url: process.env.ALCHEMY_MUMBAI,
+      accounts: [process.env.ALICE],
+      gas: "auto",
     }
   },
 
