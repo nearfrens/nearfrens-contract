@@ -128,12 +128,8 @@ contract NearFrens {
 
     }
 
-    function getListOfUserPositions(address user) external view returns (Position[] memory positions) {
-        Position[] memory p;
-        for(uint256 i = 0; i < addressToPosition[user].length; i++) {
-            p[i] = addressToPosition[user][i];
-        }
-        return p;
+    function getListOfUserPositions(address user) public view returns (Position[] memory positions) {
+        return addressToPosition[user];
     }
 
 }
