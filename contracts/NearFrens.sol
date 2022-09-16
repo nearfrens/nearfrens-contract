@@ -3,8 +3,6 @@ pragma solidity ^0.8.9;
 
 import "hardhat/console.sol";
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-
 interface IERC721 {
     function ownerOf(uint256 tokenId) external view returns (address owner);
 }
@@ -16,7 +14,7 @@ interface IPUSHCommInterface {
 
 //TODO: add status + future check-in (fonction séparée) + add fct to get the addressToPosition mapping.
 
-contract NearFrens is Ownable {
+contract NearFrens {
 
     address public EPNS_COMM_ADDRESS = 0xb3971BCef2D791bc4027BbfedFb47319A4AAaaAa;
     
