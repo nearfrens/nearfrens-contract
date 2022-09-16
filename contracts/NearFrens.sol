@@ -111,7 +111,7 @@ contract NearFrens is Ownable {
     
         IPUSHCommInterface(EPNS_COMM_ADDRESS).sendNotification(
             0x5a29280d4668622ae19B8bd0bacE271F11Ac89dA, // from channel
-            address(this), // to recipient, put address(this) in case you want Broadcast or Subset.
+            0x5a29280d4668622ae19B8bd0bacE271F11Ac89dA, // to recipient, put address(this) in case you want Broadcast or Subset.
             bytes(
                 string(
                     abi.encodePacked(
