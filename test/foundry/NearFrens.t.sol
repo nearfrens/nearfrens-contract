@@ -9,6 +9,7 @@ import "../../lib/forge-std/src/Vm.sol";
 import {NearFrens} from "../../contracts/NearFrens.sol";
 
 contract NearFrens_Test is Test {
+    
     //Variable for contract instance
     NearFrens private nearfrens;
     uint256 mainnetFork;

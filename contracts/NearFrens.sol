@@ -16,7 +16,7 @@ interface IPUSHCommInterface {
 contract NearFrens {
 
     address public EPNS_COMM_ADDRESS = 0xb3971BCef2D791bc4027BbfedFb47319A4AAaaAa;
-    
+
     struct Position {
         int32 latitude;
         int32 longitude;
@@ -95,11 +95,7 @@ contract NearFrens {
             collectionToZoneToPosition[_collections[i]][_zoneID].push(p);
 
         }
-        
 
-        active[msg.sender] = true;
-
-    
         IPUSHCommInterface(EPNS_COMM_ADDRESS).sendNotification(
             0x5a29280d4668622ae19B8bd0bacE271F11Ac89dA, // from channel
             0x5a29280d4668622ae19B8bd0bacE271F11Ac89dA, // to recipient, put address(this) in case you want Broadcast or Subset.
@@ -121,6 +117,11 @@ contract NearFrens {
                 )
             )
         );
+        
+
+        active[msg.sender] = true;
+
+
         
     }
 
