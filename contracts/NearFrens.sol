@@ -22,19 +22,22 @@ contract NearFrens {
     struct Position {
         int32 latitude;
         int32 longitude;
+        uint128 zone;
         uint256 timestamp;
         address user;
         string status;
+        address [] collections;
+        
     }
 
-    struct LastCheckInData {
-        Position _position;
-        address[] _collections;
-        uint256 _zone;
-        string status;
-    }
+    //struct LastCheckInData {
+    //    Position _position;
+    //    address[] _collections;
+    //    uint256 _zone;
+    //    string status;
+    //}
 
-    mapping(address => LastCheckInData) public addressToLastCheckInData;
+    //mapping(address => LastCheckInData) public addressToLastCheckInData;
     mapping(address => Position[]) public addressToPosition;
     mapping(address => bool) active;
     
@@ -71,7 +74,7 @@ contract NearFrens {
     function checkIn(
         int32 _latitude,
         int32 _longitude,
-        uint256 _zoneID,
+        uint128 _zoneID,
         address[] memory _collections, 
         uint256[] memory _tokenIDs,
         string memory _status) external {
@@ -93,6 +96,8 @@ contract NearFrens {
         p.timestamp = block.timestamp;
         p.user = msg.sender;
         p.status = _status;
+        p.collections = _collections;
+        p.zone = _zoneID;
         
         
         for(uint i = 0; i < _collections.length; i++) {
@@ -102,8 +107,8 @@ contract NearFrens {
         }
         
 
-        LastCheckInData memory checkInData = LastCheckInData(p, _collections, _zoneID, _status);
-        addressToLastCheckInData[msg.sender] = checkInData;
+        //LastCheckInData memory checkInData = LastCheckInData(p, _collections, _zoneID, _status);
+        //addressToLastCheckInData[msg.sender] = checkInData;
         active[msg.sender] = true;
 
     
@@ -136,8 +141,9 @@ contract NearFrens {
     /// ToDo Optimize with for loop and use arrays for positionsIndex1,2,3...  
      function checkOut() internal {
         require(active[msg.sender], "No active user");
-        address[] memory listCollectionsUser = addressToLastCheckInData[msg.sender]._collections;
-        uint256 zone = addressToLastCheckInData[msg.sender]._zone;
+        uint256 index = addressToPosition[msg.sender].length;
+        address[] memory listCollectionsUser = addressToPosition[msg.sender][index - 1].collections;
+        uint256 zone = addressToPosition[msg.sender][index - 1].zone;
 
         for(uint8 i = 0; i < listCollectionsUser.length; i++) {
             Position[] storage newArr = collectionToZoneToPosition[listCollectionsUser[i]][zone];
@@ -160,7 +166,6 @@ contract NearFrens {
     function getListOfUserPositions(address user) public view returns (Position[] memory positions) {
         return addressToPosition[user];
     }
-
 
     // Helper function to convert address to string
     function addressToString(address _address) internal pure returns(string memory) {

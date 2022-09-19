@@ -3,20 +3,24 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "tokenId",
-          "type": "uint256"
-        }
-      ],
-      "name": "ownerOf",
-      "outputs": [
+          "internalType": "address",
+          "name": "_channel",
+          "type": "address"
+        },
         {
           "internalType": "address",
-          "name": "owner",
+          "name": "_recipient",
           "type": "address"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_identity",
+          "type": "bytes"
         }
       ],
-      "stateMutability": "view",
+      "name": "sendNotification",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     }
   ],
@@ -31,7 +35,7 @@
     "linkReferences": {}
   },
   "methodIdentifiers": {
-    "ownerOf(uint256)": "6352211e"
+    "sendNotification(address,address,bytes)": "ba3d69d7"
   },
   "ast": {
     "absolutePath": "contracts/NearFrens.sol",

@@ -13,8 +13,8 @@
   },
   "files": {
     "contracts/NearFrens.sol": {
-      "lastModificationDate": 1663099277038,
-      "contentHash": "d9d85178a5eb2748daa788e24e54142f",
+      "lastModificationDate": 1663573661247,
+      "contentHash": "f886b20d861e6fe1eeb823f67f154bb9",
       "sourceName": "contracts/NearFrens.sol",
       "solcConfig": {
         "settings": {
@@ -43,14 +43,15 @@
         }
       },
       "imports": [
-        "node_modules/@openzeppelin/contracts/access/Ownable.sol",
-        "node_modules/@openzeppelin/contracts/utils/Context.sol",
         "node_modules/hardhat/console.sol"
       ],
       "versionRequirement": "^0.8.9",
       "artifacts": {
         "IERC721": {
           "0.8.16+commit.07a7930e.Darwin.appleclang": "NearFrens.sol/IERC721.json"
+        },
+        "IPUSHCommInterface": {
+          "0.8.16+commit.07a7930e.Darwin.appleclang": "NearFrens.sol/IPUSHCommInterface.json"
         },
         "NearFrens": {
           "0.8.16+commit.07a7930e.Darwin.appleclang": "NearFrens.sol/NearFrens.json"
@@ -304,84 +305,6 @@
         }
       }
     },
-    "node_modules/@openzeppelin/contracts/access/Ownable.sol": {
-      "lastModificationDate": 1662636309397,
-      "contentHash": "e436cea06129be2c73cda4b1acc848b5",
-      "sourceName": "node_modules/@openzeppelin/contracts/access/Ownable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "node_modules/@openzeppelin/contracts/utils/Context.sol"
-      ],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "Ownable": {
-          "0.8.16+commit.07a7930e.Darwin.appleclang": "Ownable.sol/Ownable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts/utils/Context.sol": {
-      "lastModificationDate": 1662636309383,
-      "contentHash": "5f2c5c4b6af2dd4551027144797bc8be",
-      "sourceName": "node_modules/@openzeppelin/contracts/utils/Context.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "Context": {
-          "0.8.16+commit.07a7930e.Darwin.appleclang": "Context.sol/Context.json"
-        }
-      }
-    },
     "node_modules/hardhat/console.sol": {
       "lastModificationDate": 1662635682990,
       "contentHash": "4ff3cd2f6272c9a6516e9ee4f2b967d3",
@@ -421,8 +344,8 @@
       }
     },
     "test/foundry/NearFrens.t.sol": {
-      "lastModificationDate": 1663099496107,
-      "contentHash": "3c85efaae36c20a6577ee70f0788a413",
+      "lastModificationDate": 1663573779255,
+      "contentHash": "525b4864a43a0173fbfb3a4e31da33e8",
       "sourceName": "test/foundry/NearFrens.t.sol",
       "solcConfig": {
         "settings": {
@@ -458,8 +381,6 @@
         "lib/forge-std/src/Vm.sol",
         "lib/forge-std/src/console.sol",
         "lib/forge-std/src/console2.sol",
-        "node_modules/@openzeppelin/contracts/access/Ownable.sol",
-        "node_modules/@openzeppelin/contracts/utils/Context.sol",
         "node_modules/hardhat/console.sol"
       ],
       "versionRequirement": "^0.8.9",

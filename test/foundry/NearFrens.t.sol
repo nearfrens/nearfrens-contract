@@ -21,6 +21,7 @@ contract NearFrens_Test is Test {
 
     address[] NFT_contracts = [NFTaddress1, NFTaddress2, NFTaddress3];
     uint256[] tokenIds = [3, 28, 49];
+    string status = "Hello World";
 
     struct Positions {
         int32 latitude;
@@ -41,7 +42,7 @@ contract NearFrens_Test is Test {
 
     function testCheckIn() public {
         vm.startPrank(bob);
-        nearfrens.checkIn(387775416, -913519609, 1, NFT_contracts , tokenIds);
+        nearfrens.checkIn(387775416, -913519609, 1, NFT_contracts , tokenIds, status);
         (int32 lat, int32 long, uint256 timestamp, address user) = nearfrens.returnPositionData();
         
         emit log_int(lat);
