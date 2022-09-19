@@ -126,8 +126,7 @@ contract NearFrens {
     }
 
     /// @dev This function locates the data of the user in the array: collectionToZoneToPosition
-    ///       once located this data is removed by switching item index with last position and deleting last position.
-    /// ToDo Optimize with for loop and use arrays for positionsIndex1,2,3...  
+    ///       once located this data is removed by switching item index with last position and deleting last position.  
      function checkOut() internal {
         require(active[msg.sender], "No active user");
         uint256 index = addressToPosition[msg.sender].length;
