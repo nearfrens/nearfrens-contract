@@ -12,13 +12,11 @@ interface IPUSHCommInterface {
     function sendNotification(address _channel, address _recipient, bytes calldata _identity) external;
 }
 
-//TODO: add status + future check-in (fonction séparée) + add fct to get the addressToPosition mapping.
 
 contract NearFrens {
 
     address public EPNS_COMM_ADDRESS = 0xb3971BCef2D791bc4027BbfedFb47319A4AAaaAa;
     
-    ///here we add the user in order to be able to track it's position in arrays to remove it.
     struct Position {
         int32 latitude;
         int32 longitude;
@@ -30,14 +28,6 @@ contract NearFrens {
         
     }
 
-    //struct LastCheckInData {
-    //    Position _position;
-    //    address[] _collections;
-    //    uint256 _zone;
-    //    string status;
-    //}
-
-    //mapping(address => LastCheckInData) public addressToLastCheckInData;
     mapping(address => Position[]) public addressToPosition;
     mapping(address => bool) active;
     
@@ -107,8 +97,6 @@ contract NearFrens {
         }
         
 
-        //LastCheckInData memory checkInData = LastCheckInData(p, _collections, _zoneID, _status);
-        //addressToLastCheckInData[msg.sender] = checkInData;
         active[msg.sender] = true;
 
     
