@@ -24,7 +24,8 @@ contract NearFrens {
         uint256 timestamp;
         address user;
         string status;
-        address [] collections;
+        address[] collections;
+        uint256[] tokenIds;
         
     }
 
@@ -88,6 +89,7 @@ contract NearFrens {
         p.status = _status;
         p.collections = _collections;
         p.zone = _zoneID;
+        p.tokenIds = _tokenIDs;
         
         
         for(uint i = 0; i < _collections.length; i++) {
