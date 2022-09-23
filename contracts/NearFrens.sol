@@ -32,11 +32,11 @@ contract NearFrens {
     mapping(address => Position[]) public addressToPosition;
     mapping(address => bool) active;
     
-    ///Will return an array of positions for a specified collection + zone
+    ///@dev Will return an array of positions for a specified collection + zone
     mapping(address => mapping(uint => Position[])) public collectionToZoneToPosition;
 
 
-    /// function to call by front end to get the position in lat/long for specified collections (that user should own)
+    ///@dev function to call to get the position data for specified collections and zone
     function getPositionsforCollections(address[] memory collections, uint256 zone) external view returns (Position[] memory _data1, Position[] memory _data2, Position[] memory _data3) {
         require(collections.length < 4, "max 3 collections");
 
@@ -54,6 +54,7 @@ contract NearFrens {
 
     }
 
+    ///@dev when called by a user will return his last position data.
     function returnPositionData() external view returns (int32, int32, uint256, address) {
         uint256 index = addressToPosition[msg.sender].length;
         Position memory lastPosition = addressToPosition[msg.sender][index - 1];
@@ -61,7 +62,7 @@ contract NearFrens {
 
     }
 
-    /// To Do: Put a check that requires the sender to be in possession of the NFT
+    ///@dev checks-in a maximum of three collections per user. Requires msg.sender is owner of the NFT.
     function checkIn(
         int32 _latitude,
         int32 _longitude,
@@ -73,9 +74,9 @@ contract NearFrens {
         require(_collections.length < 4, "Check in max for 3 collections");
         require(bytes(_status).length < 128, "too long description");
     
-        //for(uint j = 0; j < _tokenIDs.length; j++) {
-        //    require(IERC721(_collections[j]).ownerOf(_tokenIDs[j]) == msg.sender);
-        //}
+        for(uint j = 0; j < _tokenIDs.length; j++) {
+            require(IERC721(_collections[j]).ownerOf(_tokenIDs[j]) == msg.sender);
+        }
         
         if(active[msg.sender] == true) {
             checkOut();
@@ -153,11 +154,12 @@ contract NearFrens {
 
     }
 
+    ///@dev returns an array with the last positions checked-in by user.
     function getListOfUserPositions(address user) public view returns (Position[] memory positions) {
         return addressToPosition[user];
     }
 
-    // Helper function to convert address to string
+    ///@dev Helper function to convert address to
     function addressToString(address _address) internal pure returns(string memory) {
         bytes32 _bytes = bytes32(uint256(uint160(_address)));
         bytes memory HEX = "0123456789abcdef";
