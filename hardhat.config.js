@@ -17,6 +17,11 @@ module.exports = {
       url: process.env.ALCHEMY_MUMBAI,
       accounts: [process.env.ALICE],
       gas: "auto",
+    },
+    polygon: {
+      url: process.env.ALCHEMY_POLYGON,
+      accounts: [process.env.BOB],
+      gas: "auto",
     }
   },
 

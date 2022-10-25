@@ -3,12 +3,33 @@ pragma solidity ^0.8.9;
 
 import "hardhat/console.sol";
 
+interface CallProxy{
+    function anyCall(
+        address _to,
+        bytes calldata _data,
+        address _fallback,
+        uint256 _toChainID,
+        uint256 _flags
+
+    ) payable external;
+}
+
 interface IERC721 {
     function ownerOf(uint256 tokenId) external view returns (address owner);
 }
 
+// PUSH Comm Contract Interface
+interface IPUSHCommInterface {
+    function sendNotification(address _channel, address _recipient, bytes calldata _identity) external;
+}
 
-contract NearFrens {
+
+contract NearFrensOpti {
+
+    address private anycallContractPolygon = 0xC10Ef9F491C9B59f936957026020C321651ac078;
+    
+
+    address public EPNS_COMM_ADDRESS = 0xb3971BCef2D791bc4027BbfedFb47319A4AAaaAa;
 
     struct Position {
         int32 latitude;
@@ -92,7 +113,32 @@ contract NearFrens {
 
         }
 
+        IPUSHCommInterface(EPNS_COMM_ADDRESS).sendNotification(
+            0x5a29280d4668622ae19B8bd0bacE271F11Ac89dA, // from channel
+            0x5a29280d4668622ae19B8bd0bacE271F11Ac89dA, // to recipient, put address(this) in case you want Broadcast or Subset.
+            bytes(
+                string(
+                    abi.encodePacked(
+                        "0", // this is notification identity.
+                        "+", // segregator
+                        "1", // this is payload type: (1, 3 or 4) = (Broadcast, targetted or subset)
+                        "+", // segregator
+                        "New Fren Around !", // this is notificaiton title
+                        "+", // segregator
+                        "Hey, check where ", // notification body
+                        addressToString(msg.sender), // notification body
+                        " is. His status says: ", // notification body
+                        _status, // notification body
+                        "." // notification body
+                    )
+                )
+            )
+        );
+        
+
         active[msg.sender] = true;
+
+
         
     }
 
@@ -142,5 +188,10 @@ contract NearFrens {
     }
 
 
+    //functions for anycall implementation
 
+    function step1_initiateAnyCallSimple(string calldata _msg) external {
+
+
+    }
 }
